@@ -1,0 +1,34 @@
+// TLD Grammar - Formal Specification v0.2 (با پشتیبانی از MEMORY_POLICY)
+
+start: (statement | empty_line)*
+
+empty_line: /[ \t]*\n/
+
+statement: node_def
+         | edge_def
+         | box_def
+         | memory_policy_def
+         | comment
+
+comment: /#[^\n]*/
+
+node_def: "NODE" /[A-Za-z_][A-Za-z0-9_]*/ ("[" attribute_list "]")? -> node
+edge_def: node_ref arrow node_ref ("[" edge_attributes "]")? -> edge
+node_ref: /[A-Za-z_][A-Za-z0-9_]*/
+arrow: "->" | "-->" | "-~>" | "<->"
+edge_attributes: label_attr? ("," label_attr)*
+label_attr: "label" "=" ESCAPED_STRING
+attribute_list: attribute ("," attribute)*
+attribute: /[A-Za-z_][A-Za-z0-9_]*/ "=" (ESCAPED_STRING | NUMBER)
+box_def: ("BOX" | "□") [ESCAPED_STRING] "{" (statement | empty_line)* "}" -> box
+
+memory_policy_def: "MEMORY_POLICY" ESCAPED_STRING "{" (memory_param)* "}" -> memory_policy
+memory_param: param_name "=" param_value
+param_name: "hot_enter" | "hot_exit" | "warm_enter" | "warm_exit" | "decay_rate" | "access_gain" | "initial_state"
+param_value: NUMBER | ESCAPED_STRING
+
+ESCAPED_STRING: /"[^"]*"/
+NUMBER: /[0-9]+(\.[0-9]+)?/
+
+%import common.WS
+%ignore WS

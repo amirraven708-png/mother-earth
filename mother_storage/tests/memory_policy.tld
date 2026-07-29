@@ -1,0 +1,9 @@
+MEMORY_POLICY "event_stream" {
+    hot_enter = 0.75
+    hot_exit = 0.55
+    warm_enter = 0.30
+    warm_exit = 0.15
+    decay_rate = 0.015
+    access_gain = 0.25
+    initial_state = "cold"
+}
